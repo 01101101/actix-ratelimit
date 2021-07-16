@@ -5,7 +5,6 @@ use actix_web::{
     error::Error as AWError,
     error::ErrorInternalServerError,
     http::{HeaderName, HeaderValue},
-    HttpResponse,
 };
 use futures::future::{ok, Ready};
 use log::*;
@@ -149,13 +148,13 @@ where
     type Error = S::Error;
     type Future = Pin<Box<dyn Future<Output = Result<Self::Response, Self::Error>>>>;
 
-    fn poll_ready(&mut self, cx: &mut Context<'_>) -> Poll<Result<(), Self::Error>> {
+    fn poll_ready(&self, cx: &mut Context<'_>) -> Poll<Result<(), Self::Error>> {
         self.service.borrow_mut().poll_ready(cx)
     }
 
-    fn call(&mut self, req: ServiceRequest) -> Self::Future {
+    fn call(&self, req: ServiceRequest) -> Self::Future {
         let store = self.store.clone();
-        let mut srv = self.service.clone();
+        let srv = self.service.clone();
         let max_requests = self.max_requests;
         let interval = Duration::from_secs(self.interval);
         let identifier = self.identifier.clone();
@@ -178,12 +177,7 @@ where
                         };
                         if c == 0 {
                             info!("Limit exceeded for client: {}", &identifier);
-                            let mut response = HttpResponse::TooManyRequests();
-                            // let mut response = (error_callback)(&mut response);
-                            response.set_header("x-ratelimit-limit", max_requests.to_string());
-                            response.set_header("x-ratelimit-remaining", c.to_string());
-                            response.set_header("x-ratelimit-reset", reset.as_secs().to_string());
-                            Err(response.into())
+                            Err(ARError::TooManyRequests(max_requests, c, reset).into())
                         } else {
                             // Decrement value
                             let res: ActorResponse = store

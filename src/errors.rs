@@ -1,8 +1,7 @@
 //! Errors that can occur during middleware processing stage
-use actix_web::error::Error as AWError;
-use actix_web::web::HttpResponse;
+use actix_web::{ResponseError, HttpResponse};
 use failure::{self, Fail};
-use log::*;
+use std::time::Duration;
 
 /// Custom error type. Useful for logging and debugging different kinds of errors.
 /// This type can be converted to Actix Error, which defaults to
@@ -29,11 +28,22 @@ pub enum ARError {
     /// Identifier error
     #[fail(display = "client identification failed")]
     IdentificationError,
+
+    #[fail(display = "too many requests")]
+    TooManyRequests(usize, usize, Duration),
 }
 
-impl From<ARError> for AWError {
-    fn from(err: ARError) -> AWError {
-        error!("{}", &err);
-        HttpResponse::InternalServerError().into()
+impl ResponseError for ARError {
+    fn error_response(&self) -> HttpResponse {
+        match self {
+            ARError::TooManyRequests(limit, remaining, reset) =>
+                HttpResponse::TooManyRequests()
+                  .insert_header(("x-ratelimit-limit", limit.to_string()))
+                  .insert_header(("x-ratelimit-remaining", remaining.to_string()))
+                  .insert_header(("x-ratelimit-reset", reset.as_secs().to_string()))
+                  .finish(),
+            _ =>
+                HttpResponse::InternalServerError().finish()
+        }
     }
 }
