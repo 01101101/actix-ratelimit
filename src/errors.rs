@@ -38,9 +38,9 @@ impl ResponseError for ARError {
         match self {
             ARError::TooManyRequests(limit, remaining, reset) =>
                 HttpResponse::TooManyRequests()
-                  .insert_header(("x-ratelimit-limit", limit.to_string()))
-                  .insert_header(("x-ratelimit-remaining", remaining.to_string()))
-                  .insert_header(("x-ratelimit-reset", reset.as_secs().to_string()))
+                  //.insert_header(("x-ratelimit-limit", limit.to_string()))
+                  //.insert_header(("x-ratelimit-remaining", remaining.to_string()))
+                  //.insert_header(("x-ratelimit-reset", reset.as_secs().to_string()))
                   .finish(),
             _ =>
                 HttpResponse::InternalServerError().finish()

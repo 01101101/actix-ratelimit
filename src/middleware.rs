@@ -193,20 +193,20 @@ where
                             // Execute the request
                             let fut = srv.call(req);
                             let mut res = fut.await?;
-                            let headers = res.headers_mut();
+                            //let headers = res.headers_mut();
                             // Safe unwraps, since usize is always convertible to string
-                            headers.insert(
-                                HeaderName::from_static("x-ratelimit-limit"),
-                                HeaderValue::from_str(max_requests.to_string().as_str())?,
-                            );
-                            headers.insert(
-                                HeaderName::from_static("x-ratelimit-remaining"),
-                                HeaderValue::from_str(updated_value.to_string().as_str())?,
-                            );
-                            headers.insert(
-                                HeaderName::from_static("x-ratelimit-reset"),
-                                HeaderValue::from_str(reset.as_secs().to_string().as_str())?,
-                            );
+                            //headers.insert(
+                            //    HeaderName::from_static("x-ratelimit-limit"),
+                            //    HeaderValue::from_str(max_requests.to_string().as_str())?,
+                            //);
+                            //headers.insert(
+                            //    HeaderName::from_static("x-ratelimit-remaining"),
+                            //    HeaderValue::from_str(updated_value.to_string().as_str())?,
+                            //);
+                            //headers.insert(
+                            //    HeaderName::from_static("x-ratelimit-reset"),
+                            //    HeaderValue::from_str(reset.as_secs().to_string().as_str())?,
+                            //);
                             Ok(res)
                         }
                     } else {
@@ -225,20 +225,20 @@ where
                         }
                         let fut = srv.call(req);
                         let mut res = fut.await?;
-                        let headers = res.headers_mut();
+                        //let headers = res.headers_mut();
                         // Safe unwraps, since usize is always convertible to string
-                        headers.insert(
-                            HeaderName::from_static("x-ratelimit-limit"),
-                            HeaderValue::from_str(max_requests.to_string().as_str()).unwrap(),
-                        );
-                        headers.insert(
-                            HeaderName::from_static("x-ratelimit-remaining"),
-                            HeaderValue::from_str(current_value.to_string().as_str()).unwrap(),
-                        );
-                        headers.insert(
-                            HeaderName::from_static("x-ratelimit-reset"),
-                            HeaderValue::from_str(interval.as_secs().to_string().as_str()).unwrap(),
-                        );
+                        //headers.insert(
+                        //    HeaderName::from_static("x-ratelimit-limit"),
+                        //    HeaderValue::from_str(max_requests.to_string().as_str()).unwrap(),
+                        //);
+                        //headers.insert(
+                        //    HeaderName::from_static("x-ratelimit-remaining"),
+                        //    HeaderValue::from_str(current_value.to_string().as_str()).unwrap(),
+                        //);
+                        //headers.insert(
+                        //    HeaderName::from_static("x-ratelimit-reset"),
+                        //    HeaderValue::from_str(interval.as_secs().to_string().as_str()).unwrap(),
+                        //);
                         Ok(res)
                     }
                 }
